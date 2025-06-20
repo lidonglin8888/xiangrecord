@@ -1,0 +1,12 @@
+# 代码混淆规则文件
+# 保留主要类和方法名
+-keep class com.bird.xiangrecord.** { *; }
+-keep interface com.bird.xiangrecord.** { *; }
+
+# 保留ArkTS相关
+-keep class ets.** { *; }
+-keep interface ets.** { *; }
+
+# 保留系统API
+-keep class ohos.** { *; }
+-keep interface ohos.** { *; }
