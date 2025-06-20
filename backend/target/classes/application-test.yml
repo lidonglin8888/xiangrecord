@@ -1,0 +1,192 @@
+# =============================================
+# 测试环境配置 - application-test.yml
+# =============================================
+
+spring:
+  datasource:
+    # 测试环境使用独立的MySQL数据库
+    url: jdbc:mysql://192.168.8.198:3306/xiangrecord?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 'fae21d15058bc4c7'
+    hikari:
+      maximum-pool-size: 5
+      minimum-idle: 1
+      connection-timeout: 10000
+      idle-timeout: 300000
+      max-lifetime: 600000
+
+# MyBatis配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true  # 下划线转驼峰
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl  # 测试环境不显示SQL
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.xiangrecord.entity
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增
+      logic-delete-field: deleted  # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  
+  # 缓存配置 - 测试环境禁用缓存
+  cache:
+    type: none
+  
+  # 开发工具 - 测试环境禁用
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+  
+  # 测试事务配置
+  test:
+    database:
+      replace: none  # 不替换数据源
+
+# 服务器配置 - 测试环境
+server:
+  port: 0  # 随机端口，避免端口冲突
+  servlet:
+    context-path: /api
+  error:
+    include-stacktrace: always  # 测试环境显示完整错误信息
+    include-message: always
+    include-binding-errors: always
+
+# 日志配置 - 测试环境
+logging:
+  level:
+    root: WARN
+    com.xiangrecord: INFO  # 应用包设置为INFO级别
+    org.springframework: WARN
+    org.hibernate: WARN
+    # 测试相关日志
+    org.springframework.test: INFO
+    org.springframework.boot.test: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  # 测试环境不写入文件日志
+  file:
+    name: ""
+
+# Swagger/OpenAPI配置 - 测试环境
+springdoc:
+  api-docs:
+    enabled: false  # 测试环境禁用API文档
+  swagger-ui:
+    enabled: false  # 测试环境禁用Swagger UI
+  show-actuator: false
+
+# 应用自定义配置 - 测试环境
+app:
+  cors:
+    allowed-origins: 
+      - "http://localhost:*"
+      - "http://127.0.0.1:*"
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+  
+  pagination:
+    default-page-size: 5  # 测试环境使用较小的分页大小
+    max-page-size: 20
+  
+  # 测试环境特定配置
+  debug:
+    enabled: false
+    log-requests: false
+    log-responses: false
+  
+  # 文件上传配置
+  upload:
+    path: "temp/test/uploads/"
+    max-file-size: 1MB
+    allowed-types: 
+      - "image/jpeg"
+      - "image/png"
+  
+  # 测试安全配置
+  security:
+    jwt:
+      secret: "test-secret-key-for-testing-only-not-for-production"
+      expiration: 3600  # 1小时
+    rate-limit:
+      enabled: false  # 测试环境禁用限流
+
+# 监控配置 - 测试环境
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"  # 测试环境只暴露基本端点
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: false
+    java:
+      enabled: false
+    os:
+      enabled: false
+
+# 测试环境数据初始化
+app-init:
+  data:
+    enabled: true  # 测试环境启用测试数据
+    sample-records: 5  # 少量测试数据
+
+# 测试专用配置
+test:
+  # 数据库测试配置
+  database:
+    cleanup: true  # 测试后清理数据
+    reset-sequences: true  # 重置序列
+  
+  # Mock配置
+  mock:
+    enabled: true
+    external-services: true
+  
+  # 性能测试配置
+  performance:
+    enabled: false
+    max-response-time: 1000  # 最大响应时间（毫秒）
+  
+  # 集成测试配置
+  integration:
+    timeout: 30000  # 集成测试超时时间（毫秒）
+    retry-attempts: 3
+
+# 测试数据配置
+test-data:
+  # 预定义测试用户
+  users:
+    - username: "testuser1"
+      email: "test1@example.com"
+      password: "testpass123"
+    - username: "testuser2"
+      email: "test2@example.com"
+      password: "testpass456"
+  
+  # 预定义测试记录
+  records:
+    count: 10
+    date-range: 7  # 最近7天
+    random-data: true
+
+# 测试环境线程池配置
+# 测试环境特定的Bean配置
+test-beans:
+  # 是否启用测试专用的Bean
+  enabled: true
+  # 模拟外部服务
+  mock-external-services: true
+  # 测试数据生成器
+  data-generator: true

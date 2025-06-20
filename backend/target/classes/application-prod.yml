@@ -1,0 +1,235 @@
+# =============================================
+# 生产环境配置 - application-prod.yml
+# =============================================
+
+spring:
+  # 生产环境数据源配置
+  datasource:
+    url: jdbc:mysql://localhost:3306/xiangrecord?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      leak-detection-threshold: 60000
+
+# MyBatis配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true  # 下划线转驼峰
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl  # 生产环境不显示SQL
+    cache-enabled: true  # 启用二级缓存
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.xiangrecord.entity
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增
+      logic-delete-field: deleted  # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  
+
+  
+  # 缓存配置 - 生产环境使用Redis
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000  # 10分钟
+      cache-null-values: false
+  
+  # Redis配置
+  redis:
+    host: localhost
+    port: 6379
+    password: 
+    database: 0
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 8
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms
+  
+  # 开发工具 - 生产环境禁用
+  devtools:
+    restart:
+      enabled: false
+    livereload:
+      enabled: false
+  
+  # 数据库迁移配置
+  flyway:
+    enabled: false  # 如果使用Flyway进行数据库版本管理
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# 生产环境服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  error:
+    include-message: never
+    include-binding-errors: never
+    include-stacktrace: never
+    include-exception: false
+
+# 生产环境日志配置
+logging:
+  level:
+    root: WARN
+    com.xiangrecord: INFO
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.security: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level [%X{traceId}] %logger{36} - %msg%n"
+  file:
+    name: logs/xiangrecord-prod.log
+    max-size: 100MB
+    max-history: 30
+    total-size-cap: 3GB
+  logback:
+    rollingpolicy:
+      max-file-size: 100MB
+      max-history: 30
+
+# 生产环境Swagger/OpenAPI配置
+springdoc:
+  api-docs:
+    enabled: false  # 生产环境禁用API文档
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: false  # 生产环境禁用Swagger UI
+    path: /swagger-ui.html
+  show-actuator: false
+
+# 生产环境应用自定义配置
+app:
+  cors:
+    allowed-origins: 
+      - "https://xiangrecord.com"
+      - "https://admin.xiangrecord.com"
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "Content-Type,Authorization,X-Requested-With"
+    allow-credentials: true
+    max-age: 86400
+  
+  pagination:
+    default-page-size: 20
+    max-page-size: 100
+  
+  # 生产环境特定配置
+  debug:
+    enabled: false
+    log-requests: false
+    log-responses: false
+  
+  # 文件上传配置
+  upload:
+    path: "uploads/prod/"
+    max-file-size: 5MB
+    allowed-types: 
+      - "image/jpeg"
+      - "image/png"
+  
+  # 安全配置
+  security:
+    jwt:
+      secret: your-production-jwt-secret-key-change-this
+      expiration: 86400  # 24小时
+    rate-limit:
+      enabled: true
+      requests-per-minute: 60
+    
+  # 监控和告警
+  monitoring:
+    enabled: true
+    metrics:
+      export:
+        prometheus:
+          enabled: true
+    alerts:
+      email: admin@xiangrecord.com
+      webhook:
+
+# 监控配置 - 生产环境
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info,metrics,prometheus"  # 生产环境只暴露必要端点
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized  # 只对授权用户显示详细信息
+      probes:
+        enabled: true
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  health:
+    diskspace:
+      enabled: true
+      threshold: 10GB
+    db:
+      enabled: true
+  info:
+    env:
+      enabled: false  # 生产环境不暴露环境变量
+    java:
+      enabled: true
+    os:
+      enabled: true
+    git:
+      mode: simple
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+        step: 60s
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 50ms,100ms,200ms,500ms
+
+# 生产环境数据初始化
+app-init:
+  data:
+    enabled: false  # 生产环境禁用示例数据
+    sample-records: 0
+
+# 生产环境线程池配置
+# JVM配置建议（通过环境变量设置）
+# JAVA_OPTS="-Xms512m -Xmx2g -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/var/log/xiangrecord/"
+
+# 环境变量说明：
+# DB_HOST: 数据库主机地址
+# DB_PORT: 数据库端口
+# DB_NAME: 数据库名称
+# DB_USERNAME: 数据库用户名
+# DB_PASSWORD: 数据库密码
+# SERVER_PORT: 服务器端口
+# SSL_ENABLED: 是否启用SSL
+# SSL_KEY_STORE: SSL证书路径
+# SSL_KEY_STORE_PASSWORD: SSL证书密码
+# LOG_PATH: 日志文件路径
+# UPLOAD_PATH: 文件上传路径
+# JWT_SECRET: JWT密钥
+# FRONTEND_URL: 前端应用URL
+# ALERT_EMAIL: 告警邮箱

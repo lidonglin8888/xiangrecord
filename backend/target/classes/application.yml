@@ -1,0 +1,117 @@
+# Spring Boot 应用配置
+# =============================================
+# 香香记录系统 - 主配置文件
+# =============================================
+
+spring:
+  application:
+    name: xiangrecord
+
+  # Profile配置 - 默认使用开发环境
+  profiles:
+    active: dev
+
+  # 通用配置（所有环境共享）
+  main:
+    banner-mode: console
+    lazy-initialization: false
+
+
+
+  # Jackson配置（通用）
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+    serialization:
+      write-dates-as-timestamps: false
+      indent-output: false  # 生产环境不缩进以节省带宽
+    deserialization:
+      fail-on-unknown-properties: false
+    default-property-inclusion: non_null
+
+  # 文件上传配置（通用）
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+      file-size-threshold: 2KB
+
+# 通用服务器配置
+server:
+  port: 8080
+  servlet:
+    # context-path: /api  # 注释掉，避免与控制器路径冲突
+  compression:
+    enabled: true
+    mime-types: text/html,text/xml,text/plain,text/css,text/javascript,application/javascript,application/json
+    min-response-size: 1024
+  shutdown: graceful  # 优雅关闭
+
+# 通用日志配置
+logging:
+  level:
+    root: INFO
+    com.xiangrecord: INFO
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# Swagger/OpenAPI通用配置
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  info:
+    title: "香香记录系统 API"
+    description: "便便健康记录管理系统的RESTful API文档"
+    version: "1.0.0"
+    contact:
+      name: "开发团队"
+      email: "dev@xiangrecord.com"
+    license:
+      name: MIT License
+      url: https://opensource.org/licenses/MIT
+
+# 应用自定义配置（通用）
+app:
+  # 应用信息
+  info:
+    name: "香香记录系统"
+    version: "1.0.0"
+    description: "便便健康记录管理系统"
+    build-time: "2025-06-20T03:01:44Z"
+  
+  # 通用分页配置
+  pagination:
+    default-page-size: 20
+    max-page-size: 100
+  
+  # 通用安全配置
+  security:
+    password:
+      min-length: 8
+      require-special-char: true
+    session:
+      timeout: 1800  # 30分钟
+
+# 通用监控配置
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: true
+  info:
+    app:
+      name: ${app.info.name}
+      version: ${app.info.version}
+      description: ${app.info.description}
+
+# 通用线程池配置

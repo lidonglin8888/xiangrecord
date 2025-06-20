@@ -1,0 +1,24 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "便便记录小助手 - 记录每一次的小确幸"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "可爱俏皮的排泄物记录应用"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "便便记录"
+    },
+    {
+      "name": "internet_permission_reason",
+      "value": "需要网络权限来同步便便记录数据"
+    },
+    {
+      "name": "network_info_permission_reason",
+      "value": "需要获取网络状态信息以确保华为账号登录功能正常运行"
+    }
+  ]
+}

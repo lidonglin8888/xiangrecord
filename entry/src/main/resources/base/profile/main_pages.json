@@ -1,0 +1,19 @@
+{
+  "src": [
+    "pages/MainTabs",
+    "pages/Index",
+    "pages/AddRecord",
+    "pages/RecordDetail",
+    "pages/HistoryList",
+    "pages/LoginPage",
+    "pages/RegisterPage",
+    "pages/HuaweiLoginPage",
+    "pages/ModeSwitchPage",
+    "pages/PersonalInfoPage",
+    "pages/UserAgreementPage",
+    "pages/PrivacyPolicyPage",
+    "pages/UpdateLogPage",
+    "pages/FeedbackPage",
+    "pages/ShareTestPage"
+  ]
+}
