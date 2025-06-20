@@ -1,0 +1,180 @@
+# 开发环境配置 - application-dev.yml
+# =============================================
+
+spring:
+  # 开发环境数据源配置
+  datasource:
+    url: jdbc:mysql://192.168.8.198:3306/xiangrecord?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 'fae21d15058bc4c7'
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  # Redis配置
+  data:
+    redis:
+      host: 192.168.8.198
+      port: 6379
+      password: m.0823
+      database: 9
+      timeout: 10000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-wait: -1ms
+          max-idle: 8
+          min-idle: 0
+
+# MyBatis配置
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true  # 下划线转驼峰
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  # 开发环境显示SQL
+  mapper-locations: classpath*:/mapper/**/*.xml
+  type-aliases-package: com.xiangrecord.entity
+  global-config:
+    db-config:
+      id-type: auto  # 主键自增
+      logic-delete-field: deleted  # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  
+  # 缓存配置
+  cache:
+    type: simple  # 开发环境使用简单缓存
+  
+  # 开发工具
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
+  
+  # 开发环境线程池配置
+  task:
+    execution:
+      pool:
+        core-size: 2
+        max-size: 8
+        queue-capacity: 50
+        keep-alive: 60s
+    scheduling:
+      pool:
+        size: 2
+
+# 开发环境服务器配置
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  error:
+    include-message: always
+    include-binding-errors: always
+    include-stacktrace: on_param
+    include-exception: true
+
+# 开发环境日志配置
+logging:
+  level:
+    root: INFO
+    com.xiangrecord: DEBUG
+    org.springframework.web: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # 显示SQL参数
+    org.springframework.security: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/xiangrecord-dev.log
+    max-size: 10MB
+    max-history: 5
+
+# Swagger/OpenAPI配置 - 开发环境
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    try-it-out-enabled: true
+  show-actuator: true
+
+# 应用自定义配置 - 开发环境
+app:
+  cors:
+    allowed-origins: 
+      - "http://localhost:3000"
+      - "http://127.0.0.1:3000"
+      - "http://localhost:8081"  # 前端开发服务器
+    allowed-methods: "*"
+    allowed-headers: "*"
+    allow-credentials: true
+    max-age: 3600
+  
+  pagination:
+    default-page-size: 10
+    max-page-size: 50
+  
+  # 开发环境特定配置
+  debug:
+    enabled: true
+    log-requests: true
+    log-responses: true
+  
+  # 文件上传配置
+  upload:
+    path: "uploads/dev/"
+    max-file-size: 10MB
+    allowed-types: 
+      - "image/jpeg"
+      - "image/png"
+      - "image/gif"
+
+# 监控配置 - 开发环境
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # 开发环境暴露所有端点
+  endpoint:
+    health:
+      show-details: always
+    info:
+      enabled: true
+  info:
+    env:
+      enabled: true
+    java:
+      enabled: true
+    os:
+      enabled: true
+
+# 开发环境数据初始化
+app-init:
+  data:
+    enabled: true  # 开发环境启用示例数据
+    sample-records: 10
+
+# JWT配置
+jwt:
+  secret: xiangrecord-jwt-secret-key-2024-very-long-and-secure-key-for-production-development
+  access-token-expiration: 86400000  # 24小时（毫秒）
+  refresh-token-expiration: 604800000 # 7天（毫秒）
+
+# 验证码配置
+verification:
+  code:
+    expiration: 300 # 5分钟（秒）
+    length: 6
+  sms:
+    enabled: false # 开发环境关闭真实短信发送
+    mock-code: "123456" # 模拟验证码
